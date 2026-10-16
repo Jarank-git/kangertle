@@ -1,0 +1,21 @@
+# ESP-IDF configuration overrides for Kangertle.
+# ESP-IDF has hundreds of options (see them with: pio run -t menuconfig). This file lists only the
+# ones we change from the defaults. On build, PlatformIO merges it into a full generated
+# file called sdkconfig.kangertle. Edit THIS file, not the generated one.
+
+# --- Flash: N16R8 module has 16 MB of quad-SPI flash ---
+CONFIG_ESPTOOLPY_FLASHSIZE_16MB=y
+CONFIG_ESPTOOLPY_FLASHMODE_QIO=y
+
+# --- PSRAM: 8 MB of octal-SPI PSRAM (the "R8"). Uses GPIO33-37 internally. ---
+CONFIG_SPIRAM=y
+CONFIG_SPIRAM_MODE_OCT=y
+CONFIG_SPIRAM_SPEED_80M=y
+
+# --- Console: send ESP_LOGx/printf output to the native USB port we plug into ---
+CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+
+# --- FreeRTOS tick rate: 1000 Hz = 1 ms per tick ---
+# The default is 100 Hz (10 ms). Tasks can only sleep in whole ticks, so at 100 Hz a 5 ms
+# IMU loop is impossible. 1000 Hz gives 1 ms resolution, at a small CPU cost.
+CONFIG_FREERTOS_HZ=1000
