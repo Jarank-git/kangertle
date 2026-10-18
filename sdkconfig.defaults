@@ -12,8 +12,10 @@ CONFIG_SPIRAM=y
 CONFIG_SPIRAM_MODE_OCT=y
 CONFIG_SPIRAM_SPEED_80M=y
 
-# --- Console: send ESP_LOGx/printf output to the native USB port we plug into ---
-CONFIG_ESP_CONSOLE_USB_SERIAL_JTAG=y
+# --- Console: send ESP_LOGx/printf output to UART0 ---
+# The devkit is plugged in through its "COM" port (CH343 USB-to-UART chip -> UART0, GPIO43/44),
+# so logs must go to UART0. The native "USB" port (GPIO19/20) would need CONSOLE_USB_SERIAL_JTAG.
+CONFIG_ESP_CONSOLE_UART_DEFAULT=y
 
 # --- FreeRTOS tick rate: 1000 Hz = 1 ms per tick ---
 # The default is 100 Hz (10 ms). Tasks can only sleep in whole ticks, so at 100 Hz a 5 ms
