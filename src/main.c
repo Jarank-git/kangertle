@@ -96,8 +96,10 @@ static void servo_task(void *arg)
     //setting up final convertion from us to ticks, then using the pca to move the actual servo
     int ticks;
     ESP_ERROR_CHECK(us_to_ticks(1500, &ticks));
-    ESP_ERROR_CHECK(pca_set_pwm(pca, 0,0,ticks));
-    ESP_LOGI(TAG, "Channel 0  set to %d ticks (center)", ticks);
+    for (int i = 0; i < 16; i++ ) {
+        ESP_ERROR_CHECK(pca_set_pwm(pca, i, 0 , ticks));
+    }
+    ESP_LOGI(TAG, "all 16 channels set to %d ticks (center)", ticks);
 
     while (1) {
           vTaskDelay(pdMS_TO_TICKS(1000));
