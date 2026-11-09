@@ -12,7 +12,7 @@
 #define I2C_FREQ_HZ 400000U
 
 // Expected I2C addresses (7-bit)
-#define ADDR_PCA9685         0x40  // A0-A5 jumpers all open
+#define ADDR_PCA9685         0x40  // A0-A5 soldered
 #define ADDR_PCA9685_ALLCALL 0x70  // PCA9685 all-call address, also answers
 #define ADDR_MPU6050         0x68  // AD0 low (0x69 if AD0 high)
 #define ADDR_HMC5883L        0x1E  // only visible after enabling MPU6050 I2C bypass

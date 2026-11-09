@@ -9,6 +9,12 @@ static const char *TAG = "main";
 #define PCA_REG_PRESCALE 0xFE
 #define PCA_REG_LED0_ON_L 0x06
 
+// per-channel trim in microseconds, added to the 1500 us centre (index = PCA channel)
+static const int trim_us[16] = {
+    /* ch0 */ -60, /* ch1 */ 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 // helper function to ensure ticks are calculated correctly, returns wether it worked or not, and updates the ticks value  via the address in the stack
 static int us_to_ticks(int us, int *ticks) {
     if (us < 500 || us > 2500) {
@@ -59,6 +65,12 @@ static void servo_task(void *arg)
     ESP_ERROR_CHECK(i2c_new_master_bus(&bus_cfg, &bus));
     ESP_LOGI(TAG, "I2C bus ready");
 
+    for (int addr = 0x08; addr < 0x78; addr++) {
+          if (i2c_master_probe(bus, addr, 50) == ESP_OK) {
+              ESP_LOGI(TAG, "Device at 0x%02X", addr);
+          }
+      }
+
     // quick probe to see if PCA9685 is found
     if (i2c_master_probe(bus, ADDR_PCA9685, 100) == ESP_OK) {
         ESP_LOGI(TAG, "FOUND at %d",ADDR_PCA9685);
@@ -94,12 +106,12 @@ static void servo_task(void *arg)
 
 
     //setting up final convertion from us to ticks, then using the pca to move the actual servo
-    int ticks;
-    ESP_ERROR_CHECK(us_to_ticks(1500, &ticks));
     for (int i = 0; i < 16; i++ ) {
+        int ticks;
+        ESP_ERROR_CHECK(us_to_ticks(1500 + trim_us[i], &ticks));
         ESP_ERROR_CHECK(pca_set_pwm(pca, i, 0 , ticks));
+        ESP_LOGI(TAG, "ch %d: %d us -> %d ticks", i, 1500 + trim_us[i], ticks);
     }
-    ESP_LOGI(TAG, "all 16 channels set to %d ticks (center)", ticks);
 
     while (1) {
           vTaskDelay(pdMS_TO_TICKS(1000));
