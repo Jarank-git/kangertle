@@ -35,6 +35,8 @@ esp_err_t pca9685_init(i2c_master_bus_handle_t bus, i2c_master_dev_handle_t *out
         .scl_speed_hz = I2C_FREQ_HZ,
     };
 
+    // adds values into the pca config
+    //make sure its setting up properly
     esp_err_t err = i2c_master_bus_add_device(bus, &pca_cfg, out_dev);
     if (err != ESP_OK) return err;
     ESP_LOGI(TAG, "PCA9685 Added to Bus");
@@ -48,7 +50,7 @@ esp_err_t pca9685_init(i2c_master_bus_handle_t bus, i2c_master_dev_handle_t *out
     if (err != ESP_OK) return err;
     ESP_LOGI(TAG, "Set PRESCALE TO 121 (50hz)");
 
-    // waking up the PCA9685 (0x20 = awake + auto-increment), oscillator needs >= 500 us
+    // waking up the PCA9685
     err = pca_write(*out_dev, PCA_REG_MODE1, 0x20);
     if (err != ESP_OK) return err;
     vTaskDelay(pdMS_TO_TICKS(2));
@@ -56,6 +58,7 @@ esp_err_t pca9685_init(i2c_master_bus_handle_t bus, i2c_master_dev_handle_t *out
     return ESP_OK;
 }
 
+// helper fcn to turn servo on for 0 - 307 ticks to center it
 esp_err_t pca9685_set_pwm(i2c_master_dev_handle_t dev, uint8_t channel, uint16_t on, uint16_t off) {
     // row of 5 bytes, which box to start, two bytes for on and off, which gives value range from 0 - 4095
     uint8_t buf[5] = {

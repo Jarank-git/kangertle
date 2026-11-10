@@ -51,6 +51,7 @@ esp_err_t servo_set_us(int ch, int us)
 
 esp_err_t servo_center_all(void)
 {
+    //setting up final convertion from us to ticks, then using the pca to move the actual servo
     for (int i = 0; i < 16; i++) {
         esp_err_t err = servo_set_us(i, 1500 + trim_us[i]);
         if (err != ESP_OK) return err;
