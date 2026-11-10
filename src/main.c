@@ -15,6 +15,16 @@ static const int trim_us[16] = {
     0, 0, 0, 0, 0, 0, 0, 0,
 };
 
+// per-channel direction: +1 if +us already matches the convention, -1 if the servo is mirrored
+// convention: shoulder + = leg outward, femur + = foot forward, linkage + = foot up
+// unused channels (3, 7, 11, 12) stay 0
+static const int dir_sign[16] = {
+    [CH_FR_SHOULDER] = -1, [CH_FR_FEMUR] = +1, [CH_FR_LINKAGE] = -1,
+    [CH_FL_SHOULDER] = +1, [CH_FL_FEMUR] = -1, [CH_FL_LINKAGE] = -1,
+    [CH_RR_SHOULDER] = +1, [CH_RR_FEMUR] = +1, [CH_RR_LINKAGE] = +1,
+    [CH_RL_SHOULDER] = -1, [CH_RL_FEMUR] = -1, [CH_RL_LINKAGE] = -1,
+};
+
 // helper function to ensure ticks are calculated correctly, returns wether it worked or not, and updates the ticks value  via the address in the stack
 static int us_to_ticks(int us, int *ticks) {
     if (us < 500 || us > 2500) {
@@ -114,7 +124,16 @@ static void servo_task(void *arg)
     }
 
     while (1) {
-          vTaskDelay(pdMS_TO_TICKS(1000));
+          for (int ch = 0; ch < 16; ch++) {
+        int t;
+        ESP_LOGI(TAG, "testing ch %d: +100 us", ch);
+        ESP_ERROR_CHECK(us_to_ticks(1500 + trim_us[ch] + dir_sign[ch] * 100, &t));
+        ESP_ERROR_CHECK(pca_set_pwm(pca, ch, 0, t));
+        vTaskDelay(pdMS_TO_TICKS(5000));
+        ESP_ERROR_CHECK(us_to_ticks(1500 + trim_us[ch], &t));
+        ESP_ERROR_CHECK(pca_set_pwm(pca, ch, 0, t));
+        vTaskDelay(pdMS_TO_TICKS(5000));
+  }
       }
 }
 

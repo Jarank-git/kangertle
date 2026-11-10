@@ -24,9 +24,9 @@
 #define CH_FR_FEMUR 1
 #define CH_FR_LINKAGE 0
 
-#define CH_FL_SHOULDER 14
+#define CH_FL_SHOULDER 13
 #define CH_FL_FEMUR 15
-#define CH_FL_LINKAGE 13
+#define CH_FL_LINKAGE 14
 
 #define CH_RR_SHOULDER 4
 #define CH_RR_FEMUR 6
