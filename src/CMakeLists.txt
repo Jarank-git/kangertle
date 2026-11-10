@@ -2,6 +2,6 @@
 # SRCS:         every .c file to compile. Add new files here or they won't be built.
 # INCLUDE_DIRS: folders searched for #include "..." headers.
 # PRIV_REQUIRES: other ESP-IDF components this code uses (esp_driver_i2c = driver/i2c_master.h).
-idf_component_register(SRCS "main.c"
+idf_component_register(SRCS "main.c" "i2c_bus.c" "pca9685.c" "servo.c" "ik.c"
                        INCLUDE_DIRS "." "../include"
                        PRIV_REQUIRES esp_driver_i2c)
