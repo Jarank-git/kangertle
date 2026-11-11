@@ -60,15 +60,21 @@ esp_err_t servo_center_all(void)
     return ESP_OK;
 }
 
-esp_err_t joint_set_deg(int ch, float deg)
-{
-    // TODO (you): angle -> us with trim and direction, then servo_set_us()
-    //   us = 1500 + trim + dir * deg * 11.1   (DS3218 180 deg: 2000 us over 180 deg)
-    (void)ch;
-    (void)deg;
-    return ESP_ERR_NOT_SUPPORTED;
-}
+//IK uses degrees, so we want to convert from degrees to us
+ esp_err_t joint_set_deg(int ch, float deg)
+  {
+    //convert from degree to us
+      float us_per_deg = 2000.0f / 180.0f;
+      //apply specfic trim for the respective servo and the direction flip
+      int us = 1500 + trim_us[ch] + (int)(dir_sign[ch] * deg *
+    us_per_deg);
 
+    //moves the servo, then returns ESP_OK or error code
+      return servo_set_us(ch, us);
+  }
+
+
+// used for calibration, and figuring out channels and direction conventions
 void servo_direction_test(void)
 {
     while (1) {
