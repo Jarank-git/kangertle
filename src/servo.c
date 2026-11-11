@@ -63,6 +63,11 @@ esp_err_t servo_center_all(void)
 //IK uses degrees, so we want to convert from degrees to us
  esp_err_t joint_set_deg(int ch, float deg)
   {
+// reject channels that don't exist or have no joint (dir_sign0 = unused)
+      if (ch < 0 || ch > 15 || dir_sign[ch] == 0) {
+          return ESP_ERR_INVALID_ARG;
+      }
+
     //convert from degree to us
       float us_per_deg = 2000.0f / 180.0f;
       //apply specfic trim for the respective servo and the direction flip
