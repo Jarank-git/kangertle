@@ -4,6 +4,7 @@
 #include "i2c_bus.h"
 #include "pca9685.h"
 #include "servo.h"
+#include "ik.h"
 
 static const char *TAG = "main";
 
@@ -19,6 +20,10 @@ static void servo_task(void *arg)
     servo_init(pca);
     ESP_ERROR_CHECK(servo_center_all());
     ESP_LOGI(TAG, "all joints at trimmed centre");
+
+    float femur, linkage;
+    esp_err_t err = ik_leg_2d(49.8f, 211.7f, &femur, &linkage);
+    ESP_LOGI(TAG, "IK Test: %s femur = %.1f linkage=%.1f", esp_err_to_name(err), femur, linkage);
 
     while (1) {
         vTaskDelay(pdMS_TO_TICKS(1000));
