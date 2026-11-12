@@ -22,7 +22,7 @@ static const int trim_us[16] = {
 // convention: shoulder + = leg outward, femur + = foot forward, linkage + = foot up
 // unused channels (3, 7, 11, 12) stay 0
 static const int dir_sign[16] = {
-    [CH_FR_SHOULDER] = -1, [CH_FR_FEMUR] = +1, [CH_FR_LINKAGE] = -1,
+    [CH_FR_SHOULDER] = -1, [CH_FR_FEMUR] = +1, [CH_FR_LINKAGE] = +1,
     [CH_FL_SHOULDER] = +1, [CH_FL_FEMUR] = -1, [CH_FL_LINKAGE] = -1,
     [CH_RR_SHOULDER] = +1, [CH_RR_FEMUR] = +1, [CH_RR_LINKAGE] = +1,
     [CH_RL_SHOULDER] = -1, [CH_RL_FEMUR] = -1, [CH_RL_LINKAGE] = -1,
@@ -71,7 +71,7 @@ esp_err_t servo_center_all(void)
       }
 
     //convert from degree to us
-      float us_per_deg = 2000.0f / 180.0f;
+      float us_per_deg = 2000.0f / 270.0f;
       //apply specfic trim for the respective servo and the direction flip
       int us = 1500 + trim_us[ch] + (int)(dir_sign[ch] * deg *
     us_per_deg);
