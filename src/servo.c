@@ -28,6 +28,22 @@ static const int dir_sign[16] = {
     [CH_RL_SHOULDER] = -1, [CH_RL_FEMUR] = -1, [CH_RL_LINKAGE] = -1,
 };
 
+// array to hold safe limits for the minimum degree each servo can move (can vary with build quality)
+static const float min_deg[16] = {
+      [CH_FR_SHOULDER] = -45, [CH_FR_FEMUR] = -45, [CH_FR_LINKAGE] = -17,
+      [CH_FL_SHOULDER] = -45, [CH_FL_FEMUR] = -45, [CH_FL_LINKAGE] = -45,
+      [CH_RR_SHOULDER] = -45, [CH_RR_FEMUR] = -45, [CH_RR_LINKAGE] = -45,
+      [CH_RL_SHOULDER] = -45, [CH_RL_FEMUR] = -45, [CH_RL_LINKAGE] = -45,
+  };
+ 
+  //array to hold the max degrees (note fine tuned for my own robot, could vary depending on build quality)
+  static const float max_deg[16] = {
+      [CH_FR_SHOULDER] = 45, [CH_FR_FEMUR] = 45, [CH_FR_LINKAGE] = 45,
+      [CH_FL_SHOULDER] = 45, [CH_FL_FEMUR] = 45, [CH_FL_LINKAGE] = 45,
+      [CH_RR_SHOULDER] = 45, [CH_RR_FEMUR] = 45, [CH_RR_LINKAGE] = 45,
+      [CH_RL_SHOULDER] = 45, [CH_RL_FEMUR] = 45, [CH_RL_LINKAGE] = 45,
+  };
+
 // helper function to ensure ticks are calculated correctly, returns wether it worked or not, and updates the ticks value  via the address in the stack
 static esp_err_t us_to_ticks(int us, int *ticks) {
     if (us < 500 || us > 2500) {
@@ -68,6 +84,17 @@ esp_err_t servo_center_all(void)
 // reject channels that don't exist or have no joint (dir_sign0 = unused)
       if (ch < 0 || ch > 15 || dir_sign[ch] == 0) {
           return ESP_ERR_INVALID_ARG;
+      }
+
+     // if command comes through to go beyond safety limits, set it to the safe max and let it behave that way, perdictable behaviour
+      if (deg > max_deg[ch]) {
+        ESP_LOGW(TAG, "ch %d: %.1f deg clamped to max %.1f", ch, deg, max_deg[ch]);
+        deg = max_deg[ch];
+      }
+
+      if (deg < min_deg[ch]) {
+        ESP_LOGW(TAG, "ch %d: %.1f deg clamped to min %.1f", ch, deg, min_deg[ch]);
+        deg = min_deg[ch];
       }
 
     //convert from degree to us
